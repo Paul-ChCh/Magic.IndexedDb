@@ -77,7 +77,10 @@ internal class MagicContractResolver<T> : JsonConverter<T>
                     propertyValues.Remove(paramName);
                 }
                 else
-                    constructorArgs[index] = GetDefaultValue(type.GetProperty(paramName)?.PropertyType ?? typeof(object));
+                {
+                    constructorArgs[index] =
+                        GetDefaultValue(type.GetProperty(paramName)?.PropertyType ?? typeof(object));
+                }
             }
 
             obj = search.InstanceCreator(constructorArgs);
