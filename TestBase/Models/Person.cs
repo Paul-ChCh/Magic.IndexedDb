@@ -14,6 +14,7 @@ public class Nested
 
 public class Person : MagicTableTool<Person>, IMagicTable<DbSets>
 {
+    
     [MagicConstructor]
     public Person()
     {
@@ -22,7 +23,7 @@ public class Person : MagicTableTool<Person>, IMagicTable<DbSets>
 
     public Person(int _Id)
     {
-        DoNotMapTest2 = _Id.ToString();
+        this._Id = _Id;
     }
 
     public List<IMagicCompoundIndex> GetCompoundIndexes() =>
