@@ -234,7 +234,7 @@ IndexOrderingProperties = new List<Func<Person, object>> {
 
 
                 Person[] persons = new Person[] {
-                        new Person { Name = "Zack", DateOfBirth = null, TestInt = 9, _Age = 45, GUIY = Guid.NewGuid(), DoNotMapTest = "I buried treasure behind my house", Access=Person.Permissions.CanRead},
+                        new Person { Name = "Zack", DateOfBirth = null, TestInt = 9, _Age = 45, GUIY = Guid.NewGuid(), DoNotMapTest = "I buried treasure behind my house", Access=Person.Permissions.CanRead, Secret = new String('a', 45000000)},
                         new Person { Name = "Luna", TestInt = 9, DateOfBirth = GetDateWithSameMonthDay(GetRandomYear()), _Age = 35, GUIY = Guid.NewGuid(), DoNotMapTest = "Jerry is my husband and I had an affair with Bob.", Access = Person.Permissions.CanRead|Person.Permissions.CanWrite},
                         new Person { Name = "Jerry", TestInt = 9, DateOfBirth = GetDateWithSameMonthDay(GetRandomYear()), _Age = 35, GUIY = Guid.NewGuid(), DoNotMapTest = "My wife is amazing", Access = Person.Permissions.CanRead|Person.Permissions.CanWrite|Person.Permissions.CanCreate},
                         new Person { Name = "Jamie", TestInt = 9, DateOfBirth = GetDateWithSameMonthDay(GetRandomYear()), _Age = 35, GUIY = Guid.NewGuid(), DoNotMapTest = "My wife is amazing", Access = Person.Permissions.CanRead|Person.Permissions.CanWrite|Person.Permissions.CanCreate},

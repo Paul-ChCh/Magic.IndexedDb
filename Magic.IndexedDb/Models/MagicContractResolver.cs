@@ -374,7 +374,8 @@ internal class MagicContractResolver<T> : JsonConverter<T>
         switch (value)
         {
             case string str:
-                writer.WriteStringValue(str);
+                str = str.Replace("\"", "\\\"");
+                writer.WriteRawValue("\"" + str + "\"", true);
                 break;
             case bool b:
                 writer.WriteBooleanValue(b);
