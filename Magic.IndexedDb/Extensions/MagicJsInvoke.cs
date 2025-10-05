@@ -122,7 +122,7 @@ internal class MagicJsInvoke
 
         stream.Position = 0;
 
-        var streamRef = new DotNetStreamReference(stream);
+        using var streamRef = new DotNetStreamReference(stream);
 
         // Send to JS
         var responseStreamRef = await _jsModule.InvokeAsync<IJSStreamReference>("streamedJsHandler", 
@@ -133,6 +133,7 @@ internal class MagicJsInvoke
         using var reader = new StreamReader(responseStream);
 
         string jsonResponse = await reader.ReadToEndAsync();
+        await responseStreamRef.DisposeAsync();
         return MagicSerializationHelper.DeserializeObject<T>(jsonResponse, settings);
     }
 
