@@ -342,6 +342,12 @@ internal class MagicContractResolver<T> : JsonConverter<T>
                     continue;
                 }
 
+                if (item is IEnumerable nestedEnumerable && item.GetType() != typeof(string))
+                {
+                    SerializeIEnumerable(writer, nestedEnumerable, options);
+                    continue;
+                }
+
                 if (item != null)
                 {
                     Type itemType = item.GetType();
@@ -397,6 +403,9 @@ internal class MagicContractResolver<T> : JsonConverter<T>
                 break;
             case Guid guid:
                 writer.WriteStringValue(guid.ToString());
+                break;
+            case Enum e:
+                writer.WriteNumberValue(((IConvertible)e).ToInt32(null));
                 break;
             default:
                 JsonSerializer.Serialize(writer, value);
