@@ -20,6 +20,25 @@ public static class SchemaHelper
         });
     }
 
+    private static List<Type> getAllLoadableTypes()
+    {
+        return AppDomain.CurrentDomain.GetAssemblies()
+            // ADD THIS LINE: Skip the WebAssembly library that crashes on Server
+            .SelectMany(a => 
+            {
+                try 
+                {
+                    return a.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    return ex.Types.Where(t => t != null)!;
+                }
+            })
+            .ToList();
+    }
+
+
     public static bool ImplementsIMagicTable(Type type)
     {
         return type.GetInterfaces().Any(i => i.IsGenericType
@@ -28,18 +47,14 @@ public static class SchemaHelper
 
     public static List<Type>? GetAllMagicTables()
     {
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        return assemblies
-            .SelectMany(a => a.GetTypes())
+        return getAllLoadableTypes()
             .Where(t => t.IsClass && !t.IsAbstract && SchemaHelper.ImplementsIMagicTable(t))
             .ToList();
     }
 
     public static List<Type>? GetAllMagicRepositories()
     {
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        return assemblies
-            .SelectMany(a => a.GetTypes())
+        return getAllLoadableTypes()
             .Where(t => t.IsClass && !t.IsAbstract && ImplementsIMagicRepository(t))
             .ToList();
     }
