@@ -359,6 +359,12 @@ internal class MagicContractResolver<T> : JsonConverter<T>
                     continue;
                 }
 
+                if (item is IEnumerable nestedEnumerable && item.GetType() != typeof(string))
+                {
+                    SerializeIEnumerable(writer, nestedEnumerable, options);
+                    continue;
+                }
+
                 if (item != null)
                 {
                     Type itemType = item.GetType();
@@ -391,7 +397,8 @@ internal class MagicContractResolver<T> : JsonConverter<T>
         switch (value)
         {
             case string str:
-                writer.WriteStringValue(str);
+                str = str.Replace("\"", "\\\"");
+                writer.WriteRawValue("\"" + str + "\"", true);
                 break;
             case bool b:
                 writer.WriteBooleanValue(b);
@@ -413,6 +420,9 @@ internal class MagicContractResolver<T> : JsonConverter<T>
                 break;
             case Guid guid:
                 writer.WriteStringValue(guid.ToString());
+                break;
+            case Enum e:
+                writer.WriteNumberValue(((IConvertible)e).ToInt32(null));
                 break;
             default:
                 JsonSerializer.Serialize(writer, value);
