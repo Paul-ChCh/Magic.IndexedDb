@@ -23,7 +23,6 @@ public static class SchemaHelper
     private static List<Type> getAllLoadableTypes()
     {
         return AppDomain.CurrentDomain.GetAssemblies()
-            // ADD THIS LINE: Skip the WebAssembly library that crashes on Server
             .SelectMany(a => 
             {
                 try 
