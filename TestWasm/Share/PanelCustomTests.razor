@@ -1,8 +1,6 @@
 ﻿@using Magic.IndexedDb
 @using TestBase.Helpers
 @using TestBase.Models
-@using TestWasm.Models
-@using Person = TestWasm.Models.Person
 @inject IMagicIndexedDb _MagicDb
 
 <MudExpansionPanel>
@@ -16,33 +14,6 @@
     </TitleContent>
 
     <ChildContent>
-        <MudPaper Class="pa-4 mb-3" Elevation="1" Style="background-color: #f9f9f9;">
-            <MudText Typo="Typo.subtitle2">Custom Person table tests:</MudText>
-
-            @foreach (var (testName, response, countResults) in TestResults)
-            {
-                <div>
-                    @if (response.Success)
-                    {
-                        <strong>✅ @testName</strong> @($" - {countResults}")
-                    }
-                    else
-                    {
-                        <strong>❌ @testName</strong> @($"- {countResults}")
-
-                        @if (!string.IsNullOrWhiteSpace(response.Message))
-                        {
-                            var messages = response.Message.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                            foreach (var message in messages)
-                            {
-                                <div style="margin-left: 20px;">🔍 @message</div>
-                            }
-                        }
-                    }
-                </div>
-            }
-        </MudPaper>
-
         @foreach (var (testName, response, countResults) in TestResults)
         {
             <div>
