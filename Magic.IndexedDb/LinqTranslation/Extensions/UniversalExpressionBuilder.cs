@@ -744,16 +744,23 @@ public class UniversalExpressionBuilder<T>
     {
         expr = StripConvert(expr); // <-- handle Convert wrappers
 
-        return expr switch
+        try
         {
-            ConstantExpression c => c,
+            return expr switch
+            {
+                ConstantExpression c => c,
 
-            // e.g., new DateTime(...) or anything not marked constant but compile-safe
-            NewExpression or MemberExpression or MethodCallExpression =>
-                Expression.Constant(Expression.Lambda(expr).Compile().DynamicInvoke()),
+                // e.g., new DateTime(...) or anything not marked constant but compile-safe
+                NewExpression or MemberExpression or MethodCallExpression =>
+                    Expression.Constant(Expression.Lambda(expr).Compile().DynamicInvoke()),
 
-            _ => throw new InvalidOperationException($"Unsupported or non-constant expression: {expr}")
-        };
+                _ => throw new InvalidOperationException($"Unsupported or non-constant expression: {expr}")
+            };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     private static Expression StripConvert(Expression expr)
