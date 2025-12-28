@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Magic.IndexedDb.Helpers;
@@ -62,25 +63,41 @@ internal class MagicContractResolver<T> : JsonConverter<T>
 
     private object CreateObjectFromDictionary(Type type, Dictionary<string, object?> propertyValues, SearchPropEntry search)
     {
-        // 🚀 If there's a constructor with parameters, use it
-        if (search.ConstructorParameterMappings.Count > 0)
+        object? obj = null;
+        List<string> unInitializedProperties = new List<string>();
+        // If the constructor set in the SearchPropEntry contains parameters, fill them
+        if (search.HasConstructorParameters)
         {
             var constructorArgs = new object?[search.ConstructorParameterMappings.Count];
             foreach (var (paramName, index) in search.ConstructorParameterMappings)
             {
                 if (propertyValues.TryGetValue(paramName, out var value))
+                {
                     constructorArgs[index] = value;
+                    propertyValues.Remove(paramName);
+                }
                 else
-                    constructorArgs[index] = GetDefaultValue(type.GetProperty(paramName)?.PropertyType ?? typeof(object));
+                {
+                    constructorArgs[index] =
+                        GetDefaultValue(type.GetProperty(paramName)?.PropertyType ?? typeof(object));
+                }
             }
 
-            return search.InstanceCreator(constructorArgs) ?? throw new InvalidOperationException($"Failed to create instance of type {type.Name}.");
+            obj = search.InstanceCreator(constructorArgs);
+        }
+        else
+        {
+            // 🚀 Use parameterless constructor
+            obj = search.InstanceCreator([]);
         }
 
-        // 🚀 Use parameterless constructor
-        var obj = search.InstanceCreator(Array.Empty<object?>()) ?? throw new InvalidOperationException($"Failed to create instance of type {type.Name}.");
+        if (obj is null)
+        {
+            throw new InvalidOperationException($"Failed to create instance of type {type.Name}.");
+        }
 
-        // 🚀 Assign property values
+
+        // 🚀 Assign property values (to properties not passed to constructor)
         foreach (var (propName, value) in propertyValues)
         {
             if (search.propertyEntries.TryGetValue(propName, out var propEntry))
