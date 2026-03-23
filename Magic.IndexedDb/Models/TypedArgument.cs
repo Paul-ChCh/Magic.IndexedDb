@@ -13,11 +13,6 @@ public class TypedArgument<T> : ITypedArgument
         Value = value;
     }
 
-    public string Serialize()
-    {
-        return MagicSerializationHelper.SerializeObject(Value);
-    }
-
     public JsonElement SerializeToJsonElement(MagicJsonSerializationSettings? settings = null)
     {
         return MagicSerializationHelper.SerializeObjectToJsonElement(Value, settings);
